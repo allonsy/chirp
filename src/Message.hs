@@ -16,6 +16,9 @@ data Message = Message {
   params :: [String]
 } deriving (Show)
 
+numParams :: Message -> Int
+numParams msg = length (params msg)
+
 prefixToString :: Prefix -> String
 prefixToString (ServerName sname) = ':' : (sname)
 prefixToString (UserName n u h) = ":" ++ n ++ userString ++ hostString

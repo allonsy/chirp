@@ -29,3 +29,4 @@ sendNotRegistered :: Handle -> IO ()
 sendNotRegistered hand = do
   let pref = M.ServerName "localhost"
   let rep = Reply pref 451 ["*"] "You have not registered"
+  sendReply hand rep

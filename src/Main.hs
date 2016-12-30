@@ -6,6 +6,8 @@ import GHC.IO.Handle
 import Control.Concurrent
 import Message
 import Reply
+import Register as R
+import Data.Maybe
 
 portNumber = "6667"
 
@@ -24,11 +26,11 @@ acceptConnections sock = do
 
 handleClient :: Handle -> IO ()
 handleClient hand = do
-  isHandClosed <- hIsEOF hand
-  if isHandClosed then do
-    putStrLn "Closing client"
+  newUserMaybe <- R.registerUser hand Nothing Nothing Nothing
+  if isJust newUserMaybe then do
+    let newUser = fromJust newUserMaybe
+    putStrLn "registered User"
     hClose hand
   else do
-    cmd <- hGetLine hand
-    putStrLn $ "received message: " ++ cmd
-    handleClient hand
+    putStrLn "Client closed before registering"
+    hClose hand
