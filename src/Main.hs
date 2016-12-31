@@ -6,9 +6,9 @@ import GHC.IO.Handle
 import Control.Concurrent
 import Message
 import Reply
-import Register as R
+import qualified Register as R
 import Data.Maybe
-import Server as S
+import qualified Server as S
 import qualified Data.HashMap.Lazy as HM
 import Control.Concurrent.MVar
 
