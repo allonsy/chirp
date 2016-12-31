@@ -25,14 +25,14 @@ main = withSocketsDo $ do
 
 acceptConnections :: Socket -> S.Server -> IO ()
 acceptConnections sock serv = do
-  (hand, _, _) <- accept sock
+  (hand, hname, _) <- accept sock
   hSetNewlineMode hand (NewlineMode CRLF CRLF)
-  forkIO (handleClient hand serv)
+  forkIO (handleClient hand serv hname)
   acceptConnections sock serv
 
-handleClient :: Handle -> S.Server -> IO ()
-handleClient hand serv = do
-  newUserMaybe <- R.registerUser hand serv Nothing Nothing Nothing
+handleClient :: Handle -> S.Server -> String -> IO ()
+handleClient hand serv hname = do
+  newUserMaybe <- R.registerUser hand serv hname Nothing Nothing Nothing
   if isJust newUserMaybe then do
     let newUser = fromJust newUserMaybe
     putStrLn "registered User"

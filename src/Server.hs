@@ -6,6 +6,6 @@ import Control.Concurrent.MVar
 
 data Server = Server {
   hostname :: String,
-  users :: MVar (HM.HashMap String U.User),
+  users :: MVar (HM.HashMap String (MVar U.User)),
   nicks :: MVar (HM.HashMap String ())
 }
