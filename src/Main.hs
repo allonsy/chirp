@@ -8,29 +8,35 @@ import Message
 import Reply
 import Register as R
 import Data.Maybe
+import Server as S
+import qualified Data.HashMap.Lazy as HM
+import Control.Concurrent.MVar
 
 portNumber = "6667"
 
 main :: IO ()
 main = withSocketsDo $ do
+  nickMap <- newMVar HM.empty
+  userMap <- newMVar HM.empty
+  let newServer = S.Server "localhost" userMap nickMap
   sock <- listenOn (Service portNumber)
-  acceptConnections sock
+  acceptConnections sock newServer
 
 
-acceptConnections :: Socket -> IO ()
-acceptConnections sock = do
+acceptConnections :: Socket -> S.Server -> IO ()
+acceptConnections sock serv = do
   (hand, _, _) <- accept sock
   hSetNewlineMode hand (NewlineMode CRLF CRLF)
-  forkIO (handleClient hand)
-  acceptConnections sock
+  forkIO (handleClient hand serv)
+  acceptConnections sock serv
 
-handleClient :: Handle -> IO ()
-handleClient hand = do
-  newUserMaybe <- R.registerUser hand Nothing Nothing Nothing
+handleClient :: Handle -> S.Server -> IO ()
+handleClient hand serv = do
+  newUserMaybe <- R.registerUser hand serv Nothing Nothing Nothing
   if isJust newUserMaybe then do
     let newUser = fromJust newUserMaybe
     putStrLn "registered User"
-    hClose hand
+    _ <- hGetLine hand
+    return ()
   else do
-    putStrLn "Client closed before registering"
-    hClose hand
+    putStrLn "client closed connection before completing registration"
