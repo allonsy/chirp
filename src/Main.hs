@@ -11,6 +11,7 @@ import Data.Maybe
 import qualified Server as S
 import qualified Data.HashMap.Lazy as HM
 import Control.Concurrent.MVar
+import Dispatch
 
 portNumber = "6667"
 
@@ -18,7 +19,8 @@ main :: IO ()
 main = withSocketsDo $ do
   nickMap <- newMVar HM.empty
   userMap <- newMVar HM.empty
-  let newServer = S.Server "localhost" userMap nickMap
+  identVar <- newMVar 0
+  let newServer = S.Server "localhost" userMap nickMap identVar
   sock <- listenOn (Service portNumber)
   acceptConnections sock newServer
 
@@ -35,8 +37,7 @@ handleClient hand serv hname = do
   newUserMaybe <- R.registerUser hand serv hname Nothing Nothing Nothing
   if isJust newUserMaybe then do
     let newUser = fromJust newUserMaybe
-    putStrLn "registered User"
-    _ <- hGetLine hand
-    return ()
+    dispatch serv newUser hand
   else do
     putStrLn "client closed connection before completing registration"
+    hClose hand

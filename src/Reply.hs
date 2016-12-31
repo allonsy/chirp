@@ -2,6 +2,7 @@ module Reply where
 
 import System.IO
 import qualified Message as M
+import Control.Exception
 
 data Reply = Reply {
   prefix :: M.Prefix,
@@ -23,4 +24,4 @@ instance Show Reply where
 
 
 sendReply :: Handle -> Reply -> IO ()
-sendReply hand rep = hPutStrLn hand (show rep)
+sendReply hand rep = finally (hPutStrLn hand (show rep)) (return ())
