@@ -10,6 +10,7 @@ import Data.Char
 import Command.Nick
 import Command.User
 import Command.Quit
+import Command.Privmsg
 
 dispatch :: S.Server -> MVar U.User -> Handle -> IO ()
 dispatch serv userVar hand = do
@@ -24,8 +25,11 @@ dispatch serv userVar hand = do
         "NICK" -> changeNick serv userVar cmd >> dispatch serv userVar hand
         "USER" -> checkUser serv userVar >> dispatch serv userVar hand
         "QUIT" -> quit serv userVar cmd >> hClose hand
-        _ -> sendUnknownCmd userVar serv (M.command cmd) >> dispatch serv userVar hand
-
+        "PRIVMSG" -> sendPrivMsg serv userVar cmd True >> dispatch serv userVar hand
+        "NOTICE" -> sendPrivMsg serv userVar cmd False >> dispatch serv userVar hand
+        _ -> putStrLn ("received unknown command: " ++ (M.command cmd)) >>
+             sendUnknownCmd userVar serv (M.command cmd) >>
+             dispatch serv userVar hand
 
 sendUnknownCmd :: MVar U.User -> S.Server -> String -> IO ()
 sendUnknownCmd userVar serv cmd = do
