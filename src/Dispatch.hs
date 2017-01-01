@@ -8,6 +8,7 @@ import System.IO
 import Control.Concurrent.MVar
 import Data.Char
 import Command.Nick
+import Command.User
 
 dispatch :: S.Server -> MVar U.User -> Handle -> IO ()
 dispatch serv userVar hand = do
@@ -20,6 +21,7 @@ dispatch serv userVar hand = do
       Left _ -> sendUnknownCmd userVar serv "*" >> dispatch serv userVar hand
       Right cmd -> case map toUpper (M.command cmd) of
         "NICK" -> changeNick serv userVar cmd >> dispatch serv userVar hand
+        "USER" -> checkUser serv userVar >> dispatch serv userVar hand
         _ -> sendUnknownCmd userVar serv (M.command cmd) >> dispatch serv userVar hand
 
 

@@ -5,6 +5,7 @@ import qualified Message as M
 import qualified Reply as R
 import qualified Server as S
 import qualified Data.HashMap.Lazy as HM
+import qualified Command.Nick as CN
 import System.IO
 import Data.Char
 import Data.Maybe
@@ -25,7 +26,7 @@ registerUser hand serv hname nick uname fname = do
             if M.numParams msg < 1 then sendNoNickGiven hand serv >> registerUser hand serv hname nick uname fname
             else do
               let chosenNick = (M.params msg) !! 0
-              if length chosenNick > 9 then sendBadNick hand serv >> registerUser hand serv hname nick uname fname
+              if not (CN.validateNick chosenNick) then sendBadNick hand serv >> registerUser hand serv hname nick uname fname
               else do
                 nickMap <- takeMVar (S.nicks serv)
                 if HM.member chosenNick nickMap then do
