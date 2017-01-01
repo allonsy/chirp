@@ -9,11 +9,12 @@ import Control.Concurrent.MVar
 import Data.Char
 import Command.Nick
 import Command.User
+import Command.Quit
 
 dispatch :: S.Server -> MVar U.User -> Handle -> IO ()
 dispatch serv userVar hand = do
   isHandClosed <- hIsEOF hand
-  if isHandClosed then return ()
+  if isHandClosed then hClose hand
   else do
     msg <- hGetLine hand
     let cmdEither = M.parseMessage msg
@@ -22,6 +23,7 @@ dispatch serv userVar hand = do
       Right cmd -> case map toUpper (M.command cmd) of
         "NICK" -> changeNick serv userVar cmd >> dispatch serv userVar hand
         "USER" -> checkUser serv userVar >> dispatch serv userVar hand
+        "QUIT" -> quit serv userVar cmd >> hClose hand
         _ -> sendUnknownCmd userVar serv (M.command cmd) >> dispatch serv userVar hand
 
 
