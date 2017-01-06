@@ -28,3 +28,14 @@ sendToChannelAsync users origin msg = mapM_ sendToUser users
       else do
         targetUser <- takeMVar use
         sendSafe (U.handle targetUser) msg
+
+addUserToChannel :: Channel -> MVar U.User -> IO ()
+addUserToChannel chan userVar = do
+  userList <- takeMVar $ users chan
+  putMVar (users chan) (userVar : userList)
+
+removeUserFromChannel :: Channel -> MVar U.User -> IO ()
+removeUserFromChannel chan userVar = do
+  userList <- takeMVar $ users chan
+  let newUserList = filter (/=userVar) userList
+  putMVar (users chan) newUserList
