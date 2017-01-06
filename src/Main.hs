@@ -19,8 +19,8 @@ main :: IO ()
 main = withSocketsDo $ do
   nickMap <- newMVar HM.empty
   userMap <- newMVar HM.empty
-  identVar <- newMVar 0
-  let newServer = S.Server "localhost" userMap nickMap identVar
+  chanMap <- newMVar HM.empty
+  let newServer = S.Server "localhost" userMap nickMap chanMap
   sock <- listenOn (Service portNumber)
   acceptConnections sock newServer
 

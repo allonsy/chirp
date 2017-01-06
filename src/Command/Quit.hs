@@ -7,7 +7,7 @@ import qualified Message as M
 import qualified Data.HashMap.Lazy as HM
 import System.IO
 import Control.Concurrent.MVar
-import Command.Helper
+import Utility
 
 quit :: S.Server -> MVar U.User -> M.Message -> IO ()
 quit serv userVar msg = do

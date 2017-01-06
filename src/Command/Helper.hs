@@ -6,7 +6,6 @@ import qualified Reply as R
 import qualified Message as M
 import System.IO
 import Control.Concurrent.MVar
-import Control.Exception
 
 
 sendNeedMoreParams :: MVar U.User -> S.Server -> String -> IO ()
@@ -24,8 +23,3 @@ sendNoSuchNick userVar serv cmd = do
   let rep = R.Reply pref 461 [U.nickname use, cmd] "No such nick/channel"
   R.sendReply (U.handle use) rep
   putMVar userVar use
-
-
-
-sendSafe :: Handle -> String -> IO ()
-sendSafe hand str = finally (hPutStrLn hand str) (return ())

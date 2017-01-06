@@ -5,6 +5,7 @@ import qualified Message as M
 import qualified User as U
 import Control.Concurrent.MVar
 import Command.Helper
+import Utility
 import qualified Data.HashMap.Lazy as HM
 
 sendPrivMsg :: S.Server -> MVar U.User -> M.Message -> Bool -> IO ()
