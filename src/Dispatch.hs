@@ -11,6 +11,7 @@ import Command.Nick
 import Command.User
 import Command.Quit
 import Command.Privmsg
+import Command.Join
 
 dispatch :: S.Server -> MVar U.User -> Handle -> IO ()
 dispatch serv userVar hand = do

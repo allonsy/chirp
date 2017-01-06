@@ -7,6 +7,7 @@ import Control.Concurrent
 import Utility
 
 data Channel = Channel {
+  name :: String,
   topic :: MVar String,
   users :: MVar [MVar U.User]
 }
@@ -28,6 +29,17 @@ sendToChannelAsync users origin msg = mapM_ sendToUser users
       else do
         targetUser <- takeMVar use
         sendSafe (U.handle targetUser) msg
+
+createChannel :: String -> String -> IO Channel
+createChannel nam top = do
+  newTopic <- newMVar top
+  userList <- newMVar []
+  return $ Channel nam newTopic userList
+
+changeTopic :: Channel -> String -> IO ()
+changeTopic chan newTopic = do
+  oldTopic <- takeMVar $ topic chan
+  putMVar (topic chan) newTopic
 
 addUserToChannel :: Channel -> MVar U.User -> IO ()
 addUserToChannel chan userVar = do
