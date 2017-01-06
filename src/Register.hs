@@ -37,7 +37,7 @@ registerUser hand serv hname nick uname fname = do
                   let newNickMap = HM.insert chosenNick () nickMap
                   putMVar (S.nicks serv) newNickMap
                   if isJust uname then do
-                    let newUser = U.User chosenNick (fromJust uname) (fromJust fname) hname hand
+                    let newUser = U.User chosenNick (fromJust uname) (fromJust fname) hname HM.empty hand
                     newUserMVar <- newMVar newUser
                     oldUserMap <- takeMVar (S.users serv)
                     let newUserMap = HM.insert chosenNick newUserMVar oldUserMap
@@ -54,7 +54,7 @@ registerUser hand serv hname nick uname fname = do
               let newUsername = (M.params msg) !! 0
               let newFullName = (M.params msg) !! 3
               if isJust nick then do
-                let newUser = U.User (fromJust nick) newUsername newFullName hname hand
+                let newUser = U.User (fromJust nick) newUsername newFullName hname HM.empty hand
                 newUserMVar <- newMVar newUser
                 oldUserMap <- takeMVar (S.users serv)
                 let newUserMap = HM.insert (fromJust nick) newUserMVar oldUserMap
